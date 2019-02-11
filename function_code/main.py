@@ -3,6 +3,8 @@
 # abstract function code from terraform module and variablize pattern somehow?
 # add an instantiation check for new containers that checks all instances and updates the settings?
 
+# MAKE DELETE CHECK EXIST FIRST AND NOT CHECK GP2
+
 
 # Import libraries
 import boto3
@@ -54,16 +56,13 @@ def handler(event, context):
   if event['detail']['result'] == 'deleted':
     for resource in event['resources']:
       match = re.match(r'.*(vol-.*)$', resource)
-      if match:
-        volume =  ec2.Volume(match.group(1))
-        if volume.volume_type == 'gp2':
-          print('Deleting alarm for volume: ', match.group(1))
-          response = cloudwatch.delete_alarms(
-            AlarmNames=[
-                '{0}-BurstBalance'.format(match.group(1))
-            ]
-          )
-          if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            print('Successfully deleted BurstBalance Alarm for volume: ', match.group(1))
-          else:
-            print(response)
+      print('Deleting alarm for volume: ', match.group(1))
+      response = cloudwatch.delete_alarms(
+        AlarmNames=[
+            '{0}-BurstBalance'.format(match.group(1))
+        ]
+      )
+      if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        print('Successfully deleted BurstBalance Alarm for volume: ', match.group(1))
+      else:
+        print(response)

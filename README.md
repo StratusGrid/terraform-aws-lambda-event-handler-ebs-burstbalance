@@ -5,7 +5,7 @@ This module will deploy a lambda function which will listen for ebs volume creat
 ```
 module "ebs-burst-balance-lambda" {
   source = "StratusGrid/lambda-event-handler-ebs-burstbalance/aws"
-  version = "1.0.1"
+  version = "1.0.2"
   name_prefix = "${var.name_prefix}"
   unique_name = "event-handler-ebs-burst-balance"
   sns_alarm_target = "${var.sns_alarm_target}"
