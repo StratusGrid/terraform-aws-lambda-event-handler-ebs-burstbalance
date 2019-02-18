@@ -41,3 +41,9 @@ variable "alarm_period" {
   type = "string"
   default = "300"
 }
+
+variable "cloudwatch_log_retention_days" {
+  description = "Number of days for retention period of Lambda logs"
+  type = "string"
+  default = "30"
+}

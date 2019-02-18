@@ -148,3 +148,12 @@ resource "aws_iam_role_policy" "function_policy" {
 }
 EOF
 }
+
+#Cloudwatch Log Group for Function
+resource "aws_cloudwatch_log_group" "log_group" {
+  name = "/aws/lambda/${aws_lambda_function.function.function_name}"
+
+  retention_in_days = "${var.cloudwatch_log_retention_days}"
+
+  tags = "${var.input_tags}"
+}
