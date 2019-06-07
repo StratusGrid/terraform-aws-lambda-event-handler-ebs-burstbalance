@@ -60,7 +60,10 @@ resource "aws_lambda_function" "function" {
       alarm_threshold  = "${var.alarm_threshold}"
       alarm_period     = "${var.alarm_period}"
     }
-  }  
+  }
+  lifecycle {
+    ignore_changes = ["filename","last_modified"]
+  }
   tags = "${var.input_tags}"
 }
 
