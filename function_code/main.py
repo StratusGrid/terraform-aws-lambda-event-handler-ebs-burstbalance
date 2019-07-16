@@ -39,7 +39,7 @@ def handler(event, context):
             Statistic='Average',
             Threshold=float(os.environ['alarm_threshold']),
             ActionsEnabled=True,
-            AlarmDescription='Alarm when EBS Burst Balance below 50%',
+            AlarmDescription='Alarm when EBS Burst Balance below threshold',
             Dimensions=[
               {
                 'Name': 'VolumeId',
