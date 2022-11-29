@@ -99,33 +99,35 @@ resource "aws_iam_role_policy" "function_policy_default" {
   name = "${var.name_prefix}-${var.unique_name}-policy-default${var.name_suffix}"
   role = aws_iam_role.function_role.id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowListCloudWatchLogGroups",
-      "Effect": "Allow",
-      "Action": "logs:DescribeLogStreams",
-      "Resource": "${aws_cloudwatch_log_group.log_group.arn}:*"
-    },
-    {
-      "Sid": "AllowCreatePutLogGroupsStreams",
-      "Effect": "Allow",
-      "Action": [
+  policy = jsonencode({
+    Version = "2012-10-17" #tfsec:ignore:aws-iam-no-policy-wildcards Ignoring because log streams names are randomly generated and can't match them
+    Statement = [
+      {
+        Sid = "AllowListCloudWatchLogGroups"
+        Action = [
+          "logs:DescribeLogStreams",
+        ]
+        Effect   = "Allow"
+        Resource = "${aws_cloudwatch_log_group.log_group.arn}:*"
+      },
+    ]
+
+    Statement = [
+      {
+        Sid = "AllowCreatePutLogGroupsStreams"
+        Action = [
           "logs:PutLogEvents",
           "logs:CreateLogStream",
           "logs:CreateLogGroup"
-      ],
-      "Resource": [
+        ]
+        Effect = "Allow"
+        Resource = [
           aws_cloudwatch_log_group.log_group.arn,
           "${aws_cloudwatch_log_group.log_group.arn}:log-stream:*"
-      ]
-    }
-  ]
-}
-EOF
-
+        ]
+      },
+    ]
+  })
 }
 
 #Policy for additional Permissions for Lambda Execution
@@ -134,29 +136,30 @@ resource "aws_iam_role_policy" "function_policy" {
   name = "${var.name_prefix}-${var.unique_name}-policy${var.name_suffix}"
   role = aws_iam_role.function_role.id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowCloudwatchActions",
-      "Effect": "Allow",
-      "Action": [
-          "cloudwatch:*"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "AllowEc2Actions",
-      "Effect": "Allow",
-      "Action": [
-          "ec2:DescribeVolumes"
-      ],
-      "Resource": "*"
-    }
-  ]
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AllowCloudwatchActions"
+        Action = [
+          "cloudwatch:*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+    Statement = [
+      {
+        Sid = "AllowEBSVolumeDescription"
+        Action = [
+          "ec2:DescribeVolumes",
+        ]
+        Effect   = "Allow"
+        Resource = "*" # The "DescribeVolumes" action MUST use a wildcard - it is not valid with a specific ARN
+      },
+    ]
+  })
 }
-EOF
 
 }
 
