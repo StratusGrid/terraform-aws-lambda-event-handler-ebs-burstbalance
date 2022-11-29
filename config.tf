@@ -161,11 +161,13 @@ resource "aws_iam_role_policy" "function_policy" {
   })
 }
 
+locals {
+  log_group_name = "/aws/lambda/${aws_lambda_function.function.function_name}"
 }
 
 #Cloudwatch Log Group for Function
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "/aws/lambda/${aws_lambda_function.function.function_name}"
+  name = local.log_group_name
 
   retention_in_days = var.cloudwatch_log_retention_days
   kms_key_id        = aws_kms_key.log_key.arn
